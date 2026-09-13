@@ -3,6 +3,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import com.example.inventory_management.model.Product;
 import com.example.inventory_management.service.ProductService;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class ProductController {
         return productService.getAllProducts();
     }
     @PostMapping("/api/products")
-    public Product createProduct(@RequestBody Product product) {
+    public Product createProduct(@Valid @RequestBody Product product) {
         return productService.createProduct(product);
     }
     @GetMapping("/api/products/{id}")
@@ -34,7 +35,7 @@ public class ProductController {
     }
 
     @PutMapping("/api/products/{id}")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    public Product updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
         return productService.updateProduct(id, product);
     }
 

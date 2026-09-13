@@ -4,14 +4,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.DecimalMin;
 
 @Entity
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "Name cannot be blank")
     private String name;
+    @Min(value = 0, message = "Quantity cannot be negative")
     private Integer quantity;
+    @DecimalMin(value = "0.0", message = "Price cannot be negative")
     private Double price;
 
     // default constructor
@@ -24,6 +30,11 @@ public class Product {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
+    }
+
+    // Getter for id
+    public Long getId(){
+        return id;
     }
 
     // Now getters and setters set up

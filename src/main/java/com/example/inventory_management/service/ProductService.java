@@ -3,6 +3,8 @@ package com.example.inventory_management.service;
 import com.example.inventory_management.model.Product;
 import com.example.inventory_management.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -22,13 +24,17 @@ public class ProductService {
         return productRepository.save(product);
     }
     public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Product not found"
+                ));
     }
     public Product updateProduct(Long id, Product updatedProduct) {
         Product product = productRepository.findById(id).orElse(null);
 
         if (product == null) {
-            return null;
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Product not found");
         }
 
         product.setName(updatedProduct.getName());
@@ -37,7 +43,14 @@ public class ProductService {
 
         return productRepository.save(product);
     }
-    public void deleteProduct(Long id){
+    public void deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Product not found"
+            );
+        }
+
         productRepository.deleteById(id);
     }
 }
