@@ -20,6 +20,8 @@ public class Product {
     @DecimalMin(value = "0.0", message = "Price cannot be negative")
     private Double price;
 
+    private String category;
+
     // default constructor
     public Product(){
 
@@ -30,6 +32,7 @@ public class Product {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
+        this.category = category;
     }
 
     // Getter for id
@@ -62,5 +65,12 @@ public class Product {
         return price;
     }
 
+    // Getters and Setters for category
+    public void setCategory(String category){
+        this.category = category;
+    }
+    public String getCategory(){
+        return category;
+    }
 }
 

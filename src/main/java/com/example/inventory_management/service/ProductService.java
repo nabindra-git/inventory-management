@@ -40,6 +40,7 @@ public class ProductService {
         product.setName(updatedProduct.getName());
         product.setQuantity(updatedProduct.getQuantity());
         product.setPrice(updatedProduct.getPrice());
+        product.setCategory(updatedProduct.getCategory());
 
         return productRepository.save(product);
     }
@@ -65,4 +66,9 @@ public class ProductService {
     public List<Product> getProductsAbovePrice(Double price){
         return productRepository.findByPriceGreaterThanEqual(price);
     }
+
+    public List<Product> getProductsByCategory(String category){
+        return productRepository.findByCategory(category);
+    }
+
 }

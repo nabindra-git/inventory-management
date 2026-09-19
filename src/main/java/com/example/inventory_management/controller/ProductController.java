@@ -59,5 +59,9 @@ public class ProductController {
         return productService.getProductsAbovePrice(price);
    }
 
+   @GetMapping("/api/products/category")
+    public List<Product> getProductsByCategory(@RequestParam String category){
+        return productService.getProductsByCategory(category);
+   }
 }
 
