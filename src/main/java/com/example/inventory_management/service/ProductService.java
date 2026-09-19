@@ -53,4 +53,16 @@ public class ProductService {
 
         productRepository.deleteById(id);
     }
+
+    public List<Product> searchByName(String name){
+        return productRepository.findByName(name);
+    }
+
+    public List<Product> getLowStockProduct(Integer quantity){
+        return productRepository.findByQuantityLessThanEqual(quantity);
+    }
+
+    public List<Product> getProductsAbovePrice(Double price){
+        return productRepository.findByPriceGreaterThanEqual(price);
+    }
 }

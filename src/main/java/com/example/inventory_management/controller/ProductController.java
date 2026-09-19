@@ -4,7 +4,7 @@ import com.example.inventory_management.model.Product;
 import com.example.inventory_management.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RestController
@@ -43,5 +43,21 @@ public class ProductController {
     public void deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
     }
+
+    @GetMapping("/api/products/search")
+    public List<Product> searchProducts(@RequestParam String name) {
+        return productService.searchByName(name);
+    }
+
+    @GetMapping("/api/products/low-stock")
+    public List<Product> getLowStockProduct(@RequestParam Integer quantity){
+        return productService.getLowStockProduct(quantity);
+   }
+
+   @GetMapping("/api/products/price")
+    public List<Product> getProductsAbovePrice(@RequestParam Double price){
+        return productService.getProductsAbovePrice(price);
+   }
+
 }
 
