@@ -71,4 +71,47 @@ public class ProductService {
         return productRepository.findByCategory(category);
     }
 
+    public Product addStock(Long id, Integer quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Product not found"
+                ));
+        if (quantity <= 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Quantity must be greater than 0"
+            );
+        }
+
+        product.setQuantity(product.getQuantity() + quantity);
+
+        return productRepository.save(product);
+    }
+
+    public Product removeStock(Long id, Integer quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Product not found"
+                ));
+
+
+        if (product.getQuantity() < quantity) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Not enough stock"
+            );
+        }
+        if (quantity <= 0) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Quantity must be greater than 0"
+            );
+        }
+
+        product.setQuantity(product.getQuantity() - quantity);
+
+        return productRepository.save(product);
+    }
 }

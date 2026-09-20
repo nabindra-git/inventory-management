@@ -63,5 +63,22 @@ public class ProductController {
     public List<Product> getProductsByCategory(@RequestParam String category){
         return productService.getProductsByCategory(category);
    }
+
+    @PostMapping("/api/products/{id}/add-stock")
+    public Product addStock(
+            @PathVariable Long id,
+            @RequestParam Integer quantity) {
+
+        return productService.addStock(id, quantity);
+    }
+
+    @PostMapping("/api/products/{id}/remove-stock")
+    public Product removeStock(
+        @PathVariable Long id,
+        @RequestParam Integer quantity) {
+
+    return productService.removeStock(id, quantity);
+
+    }
 }
 
