@@ -1,7 +1,9 @@
 package com.example.inventory_management.service;
-
+import com.example.inventory_management.dto.ProductResponseDTO;
+import com.example.inventory_management.dto.ProductDTO;
 import com.example.inventory_management.model.Product;
 import com.example.inventory_management.repository.ProductRepository;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
@@ -17,30 +19,58 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponseDTO> getAllProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getQuantity(),
+                        product.getPrice(),
+                        product.getCategory()
+                ))
+                .toList();
     }
-    public Product createProduct(Product product) {
+    public Product createProduct(ProductDTO productDTO) {
+        Product product = new Product(
+                productDTO.getName(),
+                productDTO.getQuantity(),
+                productDTO.getPrice(),
+                productDTO.getCategory()
+        );
         return productRepository.save(product);
     }
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
+
+    public ProductResponseDTO getProductById(Long id) {
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Product not found"
                 ));
+
+        return new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getCategory()
+        );
     }
-    public Product updateProduct(Long id, Product updatedProduct) {
+    public Product updateProduct(Long id, ProductDTO productDTO) {
+
         Product product = productRepository.findById(id).orElse(null);
 
         if (product == null) {
-            throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Product not found");
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Product not found"
+            );
         }
 
-        product.setName(updatedProduct.getName());
-        product.setQuantity(updatedProduct.getQuantity());
-        product.setPrice(updatedProduct.getPrice());
-        product.setCategory(updatedProduct.getCategory());
+        product.setName(productDTO.getName());
+        product.setQuantity(productDTO.getQuantity());
+        product.setPrice(productDTO.getPrice());
+        product.setCategory(productDTO.getCategory());
 
         return productRepository.save(product);
     }
@@ -55,23 +85,59 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public List<Product> searchByName(String name){
-        return productRepository.findByName(name);
+    public List<ProductResponseDTO> searchByName(String name) {
+        return productRepository.findByName(name)
+                .stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getQuantity(),
+                        product.getPrice(),
+                        product.getCategory()
+                ))
+                .toList();
     }
 
-    public List<Product> getLowStockProduct(Integer quantity){
-        return productRepository.findByQuantityLessThanEqual(quantity);
+    public List<ProductResponseDTO> getLowStockProducts(Integer quantity) {
+        return productRepository.findByQuantityLessThanEqual(quantity)
+                .stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getQuantity(),
+                        product.getPrice(),
+                        product.getCategory()
+                ))
+                .toList();
     }
 
-    public List<Product> getProductsAbovePrice(Double price){
-        return productRepository.findByPriceGreaterThanEqual(price);
+    public List<ProductResponseDTO> getProductsAbovePrice(Double price) {
+        return productRepository.findByPriceGreaterThanEqual(price)
+                .stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getQuantity(),
+                        product.getPrice(),
+                        product.getCategory()
+                ))
+                .toList();
     }
 
-    public List<Product> getProductsByCategory(String category){
-        return productRepository.findByCategory(category);
+    public List<ProductResponseDTO> getProductsByCategory(String category) {
+        return productRepository.findByCategory(category)
+                .stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getQuantity(),
+                        product.getPrice(),
+                        product.getCategory()
+                ))
+                .toList();
     }
 
-    public Product addStock(Long id, Integer quantity) {
+    public ProductResponseDTO addStock(Long id, Integer quantity) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -86,10 +152,18 @@ public class ProductService {
 
         product.setQuantity(product.getQuantity() + quantity);
 
-        return productRepository.save(product);
+        productRepository.save(product);
+
+        return new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getCategory()
+        );
     }
 
-    public Product removeStock(Long id, Integer quantity) {
+    public ProductResponseDTO removeStock(Long id, Integer quantity) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -112,6 +186,11 @@ public class ProductService {
 
         product.setQuantity(product.getQuantity() - quantity);
 
-        return productRepository.save(product);
+        productRepository.save(product);
+        return new ProductResponseDTO(product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getCategory());
     }
 }

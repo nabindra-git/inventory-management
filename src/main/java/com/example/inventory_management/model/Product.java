@@ -28,7 +28,7 @@ public class Product {
     }
 
     // Creating a constructor to create objects
-    public Product(String name, Integer quantity, Double price){
+    public Product(String name, Integer quantity, Double price, String category){
         this.name = name;
         this.quantity = quantity;
         this.price = price;
