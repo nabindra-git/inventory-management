@@ -1,4 +1,4 @@
-package com.example.inventory_management.exception;
+package com.example.inventory_management.exeption;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
