@@ -4,6 +4,7 @@ import com.example.inventory_management.dto.UserDTO;
 import com.example.inventory_management.model.User;
 import com.example.inventory_management.repository.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -11,9 +12,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createUser(UserDTO userDTO) {
@@ -29,8 +32,9 @@ public class UserService {
 
         User user = new User(
                 userDTO.getUsername(),
-                userDTO.getPassword(),
+                passwordEncoder.encode(userDTO.getPassword()),
                 userDTO.getRole()
+
         );
 
         return userRepository.save(user);

@@ -8,8 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
+import static org.mockito.Mockito.verify;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -21,6 +23,8 @@ public class UserServiceTest {
 
     @Mock
     UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     UserService userService;
@@ -36,10 +40,11 @@ public class UserServiceTest {
 
         User user = new User(
                 "john",
-                "password123",
+                "hashedPassword",
                 "USER"
         );
-
+        when(passwordEncoder.encode("password123"))
+                .thenReturn("hashedPassword");
         when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class)))
                 .thenReturn(user);
 
@@ -48,6 +53,7 @@ public class UserServiceTest {
 
         assertEquals("john", result.getUsername());
         assertEquals("USER", result.getRole());
+        verify(passwordEncoder).encode("password123");
     }
 
     @Test
@@ -61,10 +67,11 @@ public class UserServiceTest {
 
         User user = new User(
                 "admin",
-                "password123",
+                "hashedPassword",
                 "ADMIN"
         );
-
+        when(passwordEncoder.encode("password123"))
+                .thenReturn("hashedPassword");
         when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class)))
                 .thenReturn(user);
 
@@ -72,6 +79,7 @@ public class UserServiceTest {
 
         assertEquals("admin", result.getUsername());
         assertEquals("ADMIN", result.getRole());
+        verify(passwordEncoder).encode("password123");
     }
 
     @Test

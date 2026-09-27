@@ -1,10 +1,6 @@
 package com.example.inventory_management.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -15,6 +11,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank(message = "username cannot be blank")
+    @Column(unique = true, nullable = false)
     private String username;
     @NotBlank(message = "password cannot be blank")
     private String password;
