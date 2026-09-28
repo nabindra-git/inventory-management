@@ -11,12 +11,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
-import static org.mockito.Mockito.verify;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -124,6 +123,24 @@ public class UserServiceTest {
         assertThrows(
                 ResponseStatusException.class,
                 () -> userService.getUserByUsername("unknown")
+        );
+    }
+    @Test
+    void testInvalidRoleDoesNotSaveUser() {
+
+        UserDTO userDTO = new UserDTO(
+                "john",
+                "password123",
+                "MANAGER"
+        );
+
+        assertThrows(
+                ResponseStatusException.class,
+                () -> userService.createUser(userDTO)
+        );
+
+        verify(userRepository, never()).save(
+                org.mockito.ArgumentMatchers.any(User.class)
         );
     }
 }

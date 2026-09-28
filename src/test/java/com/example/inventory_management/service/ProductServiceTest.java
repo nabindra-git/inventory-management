@@ -7,11 +7,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.example.inventory_management.dto.ProductDTO;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -197,6 +202,134 @@ public class ProductServiceTest {
         assertThrows(
                 ResponseStatusException.class,
                 () -> productService.removeStock(1L, 0)
+        );
+    }
+    @Test
+    void testCreateProduct() {
+
+        ProductDTO productDTO = new ProductDTO(
+                "Keyboard",
+                20,
+                49.99,
+                "Electronics"
+        );
+
+        Product product = new Product(
+                "Keyboard",
+                20,
+                49.99,
+                "Electronics"
+        );
+
+        when(productRepository.save(org.mockito.ArgumentMatchers.any(Product.class)))
+                .thenReturn(product);
+
+        Product result = productService.createProduct(productDTO);
+
+        assertEquals("Keyboard", result.getName());
+        assertEquals(20, result.getQuantity());
+        assertEquals(49.99, result.getPrice());
+        assertEquals("Electronics", result.getCategory());
+
+        verify(productRepository).save(org.mockito.ArgumentMatchers.any(Product.class));
+    }
+    @Test
+    void testGetProductsPagination() {
+
+        Product product1 = new Product(
+                "Laptop",
+                10,
+                999.99,
+                "Electronics"
+        );
+
+        Product product2 = new Product(
+                "Keyboard",
+                20,
+                49.99,
+                "Electronics"
+        );
+
+        List<Product> products = List.of(product1, product2);
+
+        Page<Product> productPage = new PageImpl<>(products);
+
+        Pageable pageable = PageRequest.of(0, 2);
+
+        when(productRepository.findAll(pageable))
+                .thenReturn(productPage);
+
+        Page<ProductResponseDTO> result =
+                productService.getProducts(pageable);
+
+        assertEquals(2, result.getContent().size());
+        assertEquals("Laptop", result.getContent().get(0).getName());
+        assertEquals("Keyboard", result.getContent().get(1).getName());
+    }
+    @Test
+    void testGetProductsSorting() {
+
+        Product product1 = new Product(
+                "Laptop",
+                10,
+                999.99,
+                "Electronics"
+        );
+
+        Product product2 = new Product(
+                "Keyboard",
+                20,
+                49.99,
+                "Electronics"
+        );
+
+        List<Product> products = List.of(product2, product1);
+
+        Page<Product> productPage = new PageImpl<>(products);
+
+        Pageable pageable = PageRequest.of(
+                0,
+                2,
+                org.springframework.data.domain.Sort.by("price").ascending()
+        );
+
+        when(productRepository.findAll(pageable))
+                .thenReturn(productPage);
+
+        Page<ProductResponseDTO> result =
+                productService.getProducts(pageable);
+
+        assertEquals(2, result.getContent().size());
+        assertEquals("Keyboard", result.getContent().get(0).getName());
+        assertEquals("Laptop", result.getContent().get(1).getName());
+    }
+    @Test
+    void testUpdateProductNotFound() {
+
+        ProductDTO productDTO = new ProductDTO(
+                "Laptop",
+                10,
+                999.99,
+                "Electronics"
+        );
+
+        when(productRepository.findById(99L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                ResponseStatusException.class,
+                () -> productService.updateProduct(99L, productDTO)
+        );
+    }
+    @Test
+    void testDeleteProductNotFound() {
+
+        when(productRepository.existsById(99L))
+                .thenReturn(false);
+
+        assertThrows(
+                ResponseStatusException.class,
+                () -> productService.deleteProduct(99L)
         );
     }
 }
