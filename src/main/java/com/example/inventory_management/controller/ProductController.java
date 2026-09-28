@@ -1,6 +1,8 @@
 package com.example.inventory_management.controller;
 import com.example.inventory_management.dto.ProductDTO;
 import com.example.inventory_management.dto.ProductResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PutMapping;
 import com.example.inventory_management.model.Product;
 import com.example.inventory_management.service.ProductService;
@@ -24,8 +26,8 @@ public class ProductController {
     }
 
     @GetMapping("/api/products")
-    public List<ProductResponseDTO> getProducts() {
-        return productService.getAllProducts();
+    public Page<ProductResponseDTO> getProducts(Pageable pageable) {
+        return productService.getProducts(pageable);
     }
     @PostMapping("/api/products")
     public Product createProduct(@Valid @RequestBody ProductDTO productDTO) {

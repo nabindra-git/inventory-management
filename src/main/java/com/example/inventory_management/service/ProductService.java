@@ -4,6 +4,8 @@ import com.example.inventory_management.dto.ProductDTO;
 import com.example.inventory_management.model.Product;
 import com.example.inventory_management.repository.ProductRepository;
 import org.jspecify.annotations.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,16 @@ public class ProductService {
                         product.getCategory()
                 ))
                 .toList();
+    }
+    public Page<ProductResponseDTO> getProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(product -> new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getQuantity(),
+                        product.getPrice(),
+                        product.getCategory()
+                ));
     }
     public Product createProduct(ProductDTO productDTO) {
         Product product = new Product(
