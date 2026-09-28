@@ -2,6 +2,7 @@ package com.example.inventory_management.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
@@ -21,8 +22,20 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/hello", "/error").permitAll()
-                        .requestMatchers("/api/products/**").authenticated()
-                        .requestMatchers("/api/users/**").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/api/products/**")
+                        .hasAnyRole("USER", "ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/api/products/**")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
                 )
                 .httpBasic(httpBasic -> {})
                 .build();
